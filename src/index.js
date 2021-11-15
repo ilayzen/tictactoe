@@ -1,6 +1,8 @@
 const undoButton = document.querySelector('.undo-btn');
 const redoButton = document.querySelector('.redo-btn');
 
+let rows = document.querySelectorAll('.row')
+
 const cancelledMoves = [];
 let historyOfMoves;
 
@@ -10,10 +12,12 @@ if (!localStorage.historyOfMoves) {
   historyOfMoves = JSON.parse(localStorage.getItem('historyOfMoves'));
 }
 
-function Step(index, id) {
+function Step(index, id, cell) {
   this.index = index;
   this.id = id;
+  this.cell = cell
 }
+
 function updateLocal() {
   localStorage.setItem('historyOfMoves', JSON.stringify(historyOfMoves));
 }
@@ -25,30 +29,41 @@ const buttons = document.querySelectorAll('.cell');
 function addElement() {
   for (let i = 0; i < historyOfMoves.length; i += 1) {
     if (i % 2 === 0) {
-      const cross = document.createElement('div');
-      cross.setAttribute('class', 'ch');
-
-      const addCross = document.getElementById(historyOfMoves[i].id);
-      addCross.appendChild(cross);
+      document.getElementById(historyOfMoves[i].id).className = 'cell ch';
     }
     if (i % 2 === 1) {
-      const zero = document.createElement('div');
-      zero.setAttribute('class', 'r');
-
-      const addZero = document.getElementById(historyOfMoves[i].id);
-      addZero.appendChild(zero);
+      document.getElementById(historyOfMoves[i].id).className = 'cell r';
     }
   }
 
   if (historyOfMoves.length === buttons.length) {
-    const thisWantEslint = 0;
     let tie = document.getElementsByClassName('won-title hidden');
-    [tie] = tie[thisWantEslint];
-
+    tie = tie[0];
     tie.className = 'won-title';
 
     const span = document.querySelector('.won-message');
-    span.textContent = "It's a draw!";
+    span.textContent = "It's a draw";
+  }
+}
+
+function checkWinDiagonalLeft() {   // left side to right(if win cross);
+  let counter = 0;
+  for (let i = 0; i < rows.length; i++) {
+    let cells = rows[i].querySelectorAll('.cell');
+
+    if (cells[i].className === 'cell ch') {
+      counter = counter + 1;
+    }
+
+    if (counter === cells.length) {
+      let thisCellss = 0
+      for (let j = 0; j < counter; j++) {
+        console.log(thisCellss)
+
+        document.getElementById(`c-${thisCellss}`).classList.add('win', 'diagonal-right')
+        thisCellss = thisCellss + cells.length + 1
+      }
+    }
   }
 }
 
@@ -70,20 +85,21 @@ function undo() {
 }
 
 for (let i = 0; i < buttons.length; i += 1) {
+  let thisCell = buttons[i].id;
+  thisCell = thisCell.slice(-1);
+
+  thisCell = Number(thisCell);
   buttons[i].addEventListener(
     'click',
     () => {
-      historyOfMoves.push(new Step(historyOfMoves.length, buttons[i].id));
+      historyOfMoves.push(new Step(historyOfMoves.length, buttons[i].id, thisCell));
       undoButton.disabled = false;
       addElement();
+      checkWinDiagonalLeft();
       updateLocal();
     },
-    { once: true }
+    {once: true}
   );
   updateLocal();
 }
 undoButton.addEventListener('click', undo);
-
-// обновление клеток после нажатия на поле;
-// не переживает перезагрузку
-// в div в классом 'cell' создается неслколько элементов ch или r;
