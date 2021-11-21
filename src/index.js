@@ -220,10 +220,10 @@ function undo() {
   redoButton.addEventListener('click', redo);
 }
 
-let a = document.querySelector('.field');
+let field = document.querySelector('.field');
 
 function render() {
-  a.addEventListener('click', function (event) {
+  field.addEventListener('click', function (event) {
     let cell = event.target;
     if (cell.className === 'cell') {
       historyOfMoves.push(new Step(historyOfMoves.length, cell.id));
