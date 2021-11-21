@@ -241,6 +241,7 @@ function render() {
       }
     }
   });
+
   undoButton.addEventListener('click', undo);
 }
 
