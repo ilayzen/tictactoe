@@ -23,3 +23,4 @@ function generateRows(rowsCount, colsCount) {
 }
 
 generateRows(ROWS_COUNT, COLS_COUNT);
+// win horizontal
